@@ -1,4 +1,5 @@
 using CandyServer.Data;
+using Newtonsoft.Json;
 
 namespace CandyServer;
 
@@ -10,11 +11,17 @@ public static class Program
 
         var builder = WebApplication.CreateBuilder(args);
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddDbContext<ApplicationDbContext>();
+
+        builder.Services.AddControllers().AddNewtonsoftJson(
+            options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
 
         builder.Services.AddControllers();
         builder.Services.AddAutoMapper(typeof(Program).Assembly);

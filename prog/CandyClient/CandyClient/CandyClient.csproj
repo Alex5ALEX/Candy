@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="WinForms.DataVisualization" Version="1.9.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\ComponentView\ComponentAddController.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\ComponentView\ComponentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\ComponentView\ComponentEditController.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\ComponentView\ComponentRowControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\CandyView\CandyAddController.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\CandyView\CandyControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\CandyView\CandyEditController.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\CandyView\CandyRowControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\CandyView\Rows\ComponentShortRow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+
+</Project>

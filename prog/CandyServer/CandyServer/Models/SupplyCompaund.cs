@@ -9,11 +9,11 @@ public class SupplyCompaund
 
     //links
 
-    public Guid Id_Supply { get; set; }
+    public Guid SupplyId { get; set; }
 
     public Supply? Supply { get; set; }
 
-    public Guid Id_Component { get; set; }
+    public Guid ComponentId { get; set; }
 
     public Component? Component { get; set; }
 

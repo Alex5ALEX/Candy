@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using CandyServer.Data;
-using CandyServer.DTOs;
+﻿using CandyServer.Data;
 using CandyServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +10,10 @@ namespace CandyServer.Controllers;
 public class ProviderController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public ProviderController(ApplicationDbContext context, IMapper mapper)
+    public ProviderController(ApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     [HttpGet]
@@ -30,7 +26,8 @@ public class ProviderController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var provider = await _context.Providers.FindAsync(id);
+        var provider = await _context.Providers.Where(p => p.Id == id)
+            .Include(p => p.Supplies).SingleOrDefaultAsync();
 
         if (provider == null) { return NotFound(); }
 
@@ -39,9 +36,9 @@ public class ProviderController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> Set(
-        [FromBody] CreateProviderDto provider)
+        [FromBody] Provider provider)
     {
-        await _context.Providers.AddAsync(_mapper.Map<Provider>(provider));
+        await _context.Providers.AddAsync(provider);
         await _context.SaveChangesAsync();
 
         return Ok("provider created");
@@ -49,7 +46,7 @@ public class ProviderController : ControllerBase
 
     [HttpPut("{Id}")]
     public async Task<IActionResult> Put(
-        Guid Id, [FromBody] CreateProviderDto providerGet)
+        Guid Id, [FromBody] Provider providerGet)
     {
         var provider = await _context.Providers.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
 
@@ -58,7 +55,7 @@ public class ProviderController : ControllerBase
             return NotFound();
         }
 
-        provider = _mapper.Map<Provider>(providerGet);
+        provider = providerGet;
         provider.Id = Id;
 
         _context.Providers.Update(provider);

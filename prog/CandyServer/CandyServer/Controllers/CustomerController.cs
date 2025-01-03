@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using CandyServer.Data;
-using CandyServer.DTOs;
+﻿using CandyServer.Data;
 using CandyServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +11,17 @@ namespace CandyServer.Controllers;
 public class CustomerController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public CustomerController(ApplicationDbContext context, IMapper mapper)
+    public CustomerController(ApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     // GET: api/<CustomerController>
     [HttpGet]
     public async Task<IActionResult> GetAllCandy()
     {
-        var customers = await _context.Customers.ToListAsync();
+        var customers = await _context.Customers.Include(c => c.Person).ToListAsync();
         return Ok(customers);
     }
 
@@ -33,7 +29,20 @@ public class CustomerController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var customers = await _context.Customers.FindAsync(id);
+        var customers = await _context.Customers.Where(c => c.Id == id)
+            .Include(c => c.Person).SingleOrDefaultAsync();
+
+        if (customers == null) { return NotFound(); }
+
+        return Ok(customers);
+    }
+
+    // GET api/<CustomerController>/5
+    [HttpGet("person/{id}")]
+    public async Task<IActionResult> GetByPersonId(Guid id)
+    {
+        var customers = await _context.Customers.Where(c => c.PersonId == id)
+            .Include(c => c.Person).SingleOrDefaultAsync();
 
         if (customers == null) { return NotFound(); }
 
@@ -43,9 +52,9 @@ public class CustomerController : ControllerBase
     // POST api/<CustomerController>
     [HttpPost]
     public async Task<IActionResult> Set(
-        [FromBody] CreateCustomerDto component)
+        [FromBody] Customer component)
     {
-        await _context.Customers.AddAsync(_mapper.Map<Customer>(component));
+        await _context.Customers.AddAsync(component);
         await _context.SaveChangesAsync();
 
         return Ok("customer created");
@@ -54,7 +63,7 @@ public class CustomerController : ControllerBase
     // PUT api/<CustomerController>/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(
-        Guid Id, [FromBody] CreateCustomerDto componentDto)
+        Guid Id, [FromBody] Customer componentDto)
     {
         var component = await _context.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
 
@@ -63,7 +72,7 @@ public class CustomerController : ControllerBase
             return NotFound();
         }
 
-        component = _mapper.Map<Customer>(componentDto);
+        component = componentDto;
         component.Id = Id;
 
         _context.Customers.Update(component);

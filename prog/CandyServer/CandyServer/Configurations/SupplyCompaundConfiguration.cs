@@ -1,6 +1,6 @@
 ﻿using CandyServer.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CandyServer.Configurations;
 
@@ -8,7 +8,7 @@ public class SupplyCompaundConfiguration : IEntityTypeConfiguration<SupplyCompau
 {
     public void Configure(EntityTypeBuilder<SupplyCompaund> builder)
     {
-        builder.HasKey(o => new { o.Id_Component, o.Id_Supply });
+        builder.HasKey(o => new { o.ComponentId, o.SupplyId });
 
         builder.HasOne(o => o.Supply)
             .WithMany(o => o.SupplyCompaunds);

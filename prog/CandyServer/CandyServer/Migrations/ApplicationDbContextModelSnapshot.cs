@@ -22,6 +22,34 @@ namespace CandyServer.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("CandyServer.Models.Admin", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("Admins");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("1bdbb187-88d0-477c-bb57-5b11fc0cfbad"),
+                            JobTitle = "Admin",
+                            PersonId = new Guid("00000000-0000-0000-0000-000000000001")
+                        });
+                });
+
             modelBuilder.Entity("CandyServer.Models.Candy", b =>
                 {
                     b.Property<Guid>("Id")
@@ -34,9 +62,6 @@ namespace CandyServer.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
@@ -53,9 +78,8 @@ namespace CandyServer.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Quality")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(65,30)");
 
                     b.HasKey("Id");
 
@@ -64,24 +88,16 @@ namespace CandyServer.Migrations
 
             modelBuilder.Entity("CandyServer.Models.Composition", b =>
                 {
-                    b.Property<Guid>("Id_Candy")
+                    b.Property<Guid>("CandyId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("Id_Component")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("CandyId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("ComponentId")
+                    b.Property<Guid>("ComponentId")
                         .HasColumnType("char(36)");
 
                     b.Property<double>("Weight")
                         .HasColumnType("double");
 
-                    b.HasKey("Id_Candy", "Id_Component");
-
-                    b.HasIndex("CandyId");
+                    b.HasKey("CandyId", "ComponentId");
 
                     b.HasIndex("ComponentId");
 
@@ -89,6 +105,59 @@ namespace CandyServer.Migrations
                 });
 
             modelBuilder.Entity("CandyServer.Models.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("CandyServer.Models.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("CandyServer.Models.OrderCompaund", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CandyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId", "CandyId");
+
+                    b.HasIndex("CandyId");
+
+                    b.ToTable("OrderCompaunds");
+                });
+
+            modelBuilder.Entity("CandyServer.Models.Person", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -102,7 +171,15 @@ namespace CandyServer.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -116,55 +193,20 @@ namespace CandyServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
-                });
+                    b.ToTable("Persons");
 
-            modelBuilder.Entity("CandyServer.Models.Order", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("CustomerId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("Id_Customer")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("CandyServer.Models.OrderCompaund", b =>
-                {
-                    b.Property<Guid>("Id_Order")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("Id_Candy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("CandyId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id_Order", "Id_Candy");
-
-                    b.HasIndex("CandyId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderCompaunds");
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Address = "",
+                            Email = "",
+                            Login = "admin",
+                            Name = "Admin",
+                            Password = "admin",
+                            Phone = "",
+                            Surname = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("CandyServer.Models.Provider", b =>
@@ -207,10 +249,10 @@ namespace CandyServer.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("Id_Provider")
-                        .HasColumnType("char(36)");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.Property<Guid?>("ProviderId")
+                    b.Property<Guid>("ProviderId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -222,53 +264,73 @@ namespace CandyServer.Migrations
 
             modelBuilder.Entity("CandyServer.Models.SupplyCompaund", b =>
                 {
-                    b.Property<Guid>("Id_Component")
+                    b.Property<Guid>("ComponentId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("Id_Supply")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("ComponentId")
+                    b.Property<Guid>("SupplyId")
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<Guid?>("SupplyId")
-                        .HasColumnType("char(36)");
-
                     b.Property<double>("Weight")
                         .HasColumnType("double");
 
-                    b.HasKey("Id_Component", "Id_Supply");
-
-                    b.HasIndex("ComponentId");
+                    b.HasKey("ComponentId", "SupplyId");
 
                     b.HasIndex("SupplyId");
 
                     b.ToTable("SupplyCompaunds");
                 });
 
+            modelBuilder.Entity("CandyServer.Models.Admin", b =>
+                {
+                    b.HasOne("CandyServer.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("CandyServer.Models.Composition", b =>
                 {
                     b.HasOne("CandyServer.Models.Candy", "Candy")
                         .WithMany("Compositions")
-                        .HasForeignKey("CandyId");
+                        .HasForeignKey("CandyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CandyServer.Models.Component", "Component")
                         .WithMany("Compositions")
-                        .HasForeignKey("ComponentId");
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Candy");
 
                     b.Navigation("Component");
                 });
 
+            modelBuilder.Entity("CandyServer.Models.Customer", b =>
+                {
+                    b.HasOne("CandyServer.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("CandyServer.Models.Order", b =>
                 {
                     b.HasOne("CandyServer.Models.Customer", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Customer");
                 });
@@ -277,11 +339,15 @@ namespace CandyServer.Migrations
                 {
                     b.HasOne("CandyServer.Models.Candy", "Candy")
                         .WithMany("OrderCompaunds")
-                        .HasForeignKey("CandyId");
+                        .HasForeignKey("CandyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CandyServer.Models.Order", "Order")
                         .WithMany("OrderCompaunds")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Candy");
 
@@ -292,7 +358,9 @@ namespace CandyServer.Migrations
                 {
                     b.HasOne("CandyServer.Models.Provider", "Provider")
                         .WithMany("Supplies")
-                        .HasForeignKey("ProviderId");
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Provider");
                 });
@@ -301,11 +369,15 @@ namespace CandyServer.Migrations
                 {
                     b.HasOne("CandyServer.Models.Component", "Component")
                         .WithMany("SupplyCompaunds")
-                        .HasForeignKey("ComponentId");
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CandyServer.Models.Supply", "Supply")
                         .WithMany("SupplyCompaunds")
-                        .HasForeignKey("SupplyId");
+                        .HasForeignKey("SupplyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Component");
 

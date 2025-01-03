@@ -8,8 +8,6 @@ public class Candy
 
     public decimal Price { get; set; } = 0;
 
-    public double Weight { get; set; } = 0;
-
 
     //links
     public List<OrderCompaund> OrderCompaunds { get; set; } = [];

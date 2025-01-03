@@ -1,22 +1,19 @@
-﻿using AutoMapper;
-using CandyServer.Data;
-using CandyServer.DTOs;
+﻿using CandyServer.Data;
 using CandyServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CandyServer.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
 public class ComponentController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public ComponentController(ApplicationDbContext context, IMapper mapper)
+    public ComponentController(ApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     // GET: api/<ComponentController>
@@ -41,9 +38,9 @@ public class ComponentController : ControllerBase
     // POST api/<ComponentController>
     [HttpPost]
     public async Task<IActionResult> Set(
-        [FromBody] CreateComponentDto component)
+        [FromBody] Component component)
     {
-        await _context.Components.AddAsync(_mapper.Map<Component>(component));
+        await _context.Components.AddAsync(component);
         await _context.SaveChangesAsync();
 
         return Ok("component created");
@@ -52,7 +49,7 @@ public class ComponentController : ControllerBase
     // PUT api/<ComponentController>/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(
-        Guid Id, [FromBody] CreateComponentDto componentDto)
+        Guid Id, [FromBody] Component componentDto)
     {
         var component = await _context.Components.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
 
@@ -61,7 +58,7 @@ public class ComponentController : ControllerBase
             return NotFound();
         }
 
-        component = _mapper.Map<Component>(componentDto);
+        component = componentDto;
         component.Id = Id;
 
         _context.Components.Update(component);

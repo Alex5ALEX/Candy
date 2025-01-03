@@ -6,7 +6,7 @@ public class Component
 
     public string Name { get; set; } = string.Empty;
 
-    public string Quality { get; set; } = string.Empty;
+    public decimal Price { get; set; }
 
 
     //links
@@ -14,6 +14,4 @@ public class Component
     public List<Composition> Compositions { get; set; } = [];
 
     public List<SupplyCompaund> SupplyCompaunds { get; set; } = [];
-
-
 }

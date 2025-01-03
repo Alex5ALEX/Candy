@@ -7,12 +7,12 @@ public class Composition
 
     //links
 
-    public Guid Id_Candy { get; set; }
+    public Guid CandyId { get; set; }
 
     public Candy? Candy { get; set; }
 
-    public Guid Id_Component { get; set; }
+    public Guid ComponentId { get; set; }
 
-    public Component? Component { get; set; }  
+    public Component? Component { get; set; }
 
 }

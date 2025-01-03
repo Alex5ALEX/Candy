@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using CandyServer.Data;
-using CandyServer.DTOs;
+﻿using CandyServer.Data;
 using CandyServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,12 +11,10 @@ namespace CandyServer.Controllers;
 public class SupplyController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public SupplyController(ApplicationDbContext context, IMapper mapper)
+    public SupplyController(ApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     // GET: api/<SupplyController>
@@ -33,7 +29,7 @@ public class SupplyController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var customers = await _context.Supplies.FindAsync(id);
+        var customers = await _context.Supplies.Where(s => s.Id == id).Include(s => s.Provider).SingleOrDefaultAsync();
 
         if (customers == null) { return NotFound(); }
 
@@ -43,9 +39,9 @@ public class SupplyController : ControllerBase
     // POST api/<SupplyController>
     [HttpPost]
     public async Task<IActionResult> Set(
-        [FromBody] CreateSupplyDto component)
+        [FromBody] Supply component)
     {
-        await _context.Supplies.AddAsync(_mapper.Map<Supply>(component));
+        await _context.Supplies.AddAsync(component);
         await _context.SaveChangesAsync();
 
         return Ok("supply created");
@@ -54,7 +50,7 @@ public class SupplyController : ControllerBase
     // PUT api/<SupplyController>/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(
-        Guid Id, [FromBody] CreateSupplyDto componentDto)
+        Guid Id, [FromBody] Supply componentDto)
     {
         var component = await _context.Supplies.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
 
@@ -63,7 +59,7 @@ public class SupplyController : ControllerBase
             return NotFound();
         }
 
-        component = _mapper.Map<Supply>(componentDto);
+        component = componentDto;
         component.Id = Id;
 
         _context.Supplies.Update(component);

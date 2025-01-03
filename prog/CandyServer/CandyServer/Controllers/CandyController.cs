@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using CandyServer.Data;
-using CandyServer.DTOs;
+﻿using CandyServer.Data;
 using CandyServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +10,10 @@ namespace CandyServer.Controllers;
 public class CandyController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public CandyController(ApplicationDbContext context, IMapper mapper)
+    public CandyController(ApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     // GET: api/<CandyController>
@@ -32,7 +28,8 @@ public class CandyController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var candy = await _context.Candies.FindAsync(id);
+        var candy = await _context.Candies.Where(c => c.Id == id).Include(c => c.Compositions)
+            .ThenInclude(c => c.Component).SingleOrDefaultAsync();
 
         if (candy == null) { return NotFound(); }
 
@@ -42,9 +39,9 @@ public class CandyController : ControllerBase
     // POST api/<CandyController>
     [HttpPost]
     public async Task<IActionResult> Set(
-        [FromBody] CreateCandyDto candy)
+        [FromBody] Candy candy)
     {
-        await _context.Candies.AddAsync(_mapper.Map<Candy>(candy));
+        await _context.Candies.AddAsync(candy);
         await _context.SaveChangesAsync();
 
         return Ok("candy created");
@@ -53,7 +50,7 @@ public class CandyController : ControllerBase
     // PUT api/<CandyController>/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(
-        Guid Id, [FromBody] CreateCandyDto candyDto)
+        Guid Id, [FromBody] Candy candyDto)
     {
         var candy = await _context.Candies.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
 
@@ -62,7 +59,7 @@ public class CandyController : ControllerBase
             return NotFound();
         }
 
-        candy = _mapper.Map<Candy>(candyDto);
+        candy = candyDto;
         candy.Id = Id;
 
         _context.Candies.Update(candy);
